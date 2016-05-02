@@ -7,4 +7,5 @@ Lists all duplicate contacts in your phone.
   
 Allows you to delete these unwanted occurences.
 
+
 Displays All the contacts in the "ALL" section to keep a view of all the contacts to delete from.
