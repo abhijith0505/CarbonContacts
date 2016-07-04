@@ -110,7 +110,7 @@ public class MainActivity extends ActionBarActivity {
             newList.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
 
         }
-        
+
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, newList);
         listView.setAdapter(adapter);
@@ -209,8 +209,8 @@ public class MainActivity extends ActionBarActivity {
                     // continue till this cursor reaches to all phone numbers which are associated with a contact in the contact list
                     while (pCursor.moveToNext())
                     {
-                        int phoneType 		= pCursor.getInt(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-                        //String isStarred 		= pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED));
+                        int phoneType = pCursor.getInt(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                        //String isStarred = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED));
                         String phoneNo 	= pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                         //you will get all phone numbers according to it's type as below switch case.
                         //Logs.e will print the phone number along with the name in DDMS. you can use these details where ever you want.
@@ -237,9 +237,8 @@ public class MainActivity extends ActionBarActivity {
                                 break;
                         }
 
-                        phoneContacts.add(new PhoneContact(phoneNo, contactName, type));
+                        phoneContacts.add(new PhoneContact(phoneNo, contactName, type, id));
                         Log.i("Contact details:",phoneNo + ": " + contactName + ": " + type);
-
                     }
                     pCursor.close();
                 }
@@ -293,7 +292,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void updateContact(String contactId, String type) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-         String selectPhone = ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "='" +
+        String selectPhone = ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "='" +
                 ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "'" + " AND " + ContactsContract.CommonDataKinds.Phone.TYPE + "=?";
         String[] phoneArgs = new String[]{contactId, type};
         //ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI).withSelection(selectPhone, phoneArgs).build());
@@ -475,7 +474,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
 
-    }
+        }
 
         @Override
         protected void onProgressUpdate(Integer... values) {

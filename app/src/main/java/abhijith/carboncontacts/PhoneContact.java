@@ -1,18 +1,17 @@
 package abhijith.carboncontacts;
 
-/**
- * Created by Abhijith on 04-07-2016.
- */
 public class PhoneContact implements Comparable<PhoneContact> {
 
     private String contactNumber;
     private String contactName;
     private String contactType;
+    private String contactID;
 
-    PhoneContact(String number, String name, String type){
+    PhoneContact(String number, String name, String type, String id){
         contactNumber = number;
         contactName = name;
         contactType = type;
+        contactID = id;
     }
 
     String getContactNumber(){
@@ -23,6 +22,9 @@ public class PhoneContact implements Comparable<PhoneContact> {
     }
     String getContactType(){
         return contactType;
+    }
+    String getContactID(){
+        return contactID;
     }
 
     @Override
