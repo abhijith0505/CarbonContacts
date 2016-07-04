@@ -4,8 +4,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -41,7 +42,7 @@ public class MainActivity extends ActionBarActivity {
     ListView listView;
     ArrayList<String> listItems = new ArrayList<String>();
     ArrayList<String> PhonelistItems = new ArrayList<String>();
-    ArrayList<String> dupesRemoved = new ArrayList<String>();
+    ArrayList<String> dupesRemoved = listItems;
     ArrayList<String> allContacts = new ArrayList<String>();
     ArrayList<String> newList = new ArrayList<String>();
     ArrayAdapter<String> adapter = null;
@@ -56,24 +57,32 @@ public class MainActivity extends ActionBarActivity {
     private long mBackPressed;
     int itemCount;
 
+    ArrayList<PhoneContact> phoneContacts;
+    ArrayList<PhoneContact> contactDuplicates;
+    //PhoneContact[] phoneContacts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         android.support.v7.app.ActionBar bar = MainActivity.this.getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#556e2d")));
         setContentView(R.layout.activity_main);
-        listView = (ListView) findViewById(R.id.list);
-        button = (ImageButton) findViewById(R.id.button);
-        mySwitch = (Switch) findViewById(R.id.switch1);
-        mySwitch.setChecked(false);
-        Allcontacts = false;
-        valueTV = new TextView(this);
+
+        phoneContacts = new ArrayList<>();
+        contactDuplicates = new ArrayList<>();
+
+        initializeViews();
+
+        readPhoneContacts(MainActivity.this);
+
         k = 0;
         p = 0;
-
+        Allcontacts = false;
         mProgressDialog = new ProgressDialog(this);
 
-        String order = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
+
+
+       /* String order = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
         Cursor curLog = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, order);
 
 
@@ -90,16 +99,18 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
+        curLog.close();*/
 
-        dupesRemoved = findDuplicates(listItems);
-        for (String s : listItems) {
-            allContacts.add("" + s.substring(0, s.length() - 10).trim().replaceAll(" ", ""));
+        contactDuplicates = findDuplicates(phoneContacts);
+
+        for (PhoneContact contact : phoneContacts) {
+            allContacts.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
         }
-        for (String s : dupesRemoved) {
-            listString = s;
-            newList.add("" + listString.substring(0, listString.length() - 10).trim().replaceAll(" ", ""));
+        for (PhoneContact contact : contactDuplicates) {
+            newList.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
 
         }
+        
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, newList);
         listView.setAdapter(adapter);
@@ -107,7 +118,7 @@ public class MainActivity extends ActionBarActivity {
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         adapter.notifyDataSetChanged();
         listView.invalidateViews();
-        if (dupesRemoved.isEmpty() && Allcontacts == false) {
+        if (contactDuplicates.isEmpty() && Allcontacts == false) {
             //listView.setVisibility(View.INVISIBLE);
             layout = (RelativeLayout) findViewById(R.id.rr);
             // valueTV = new TextView(this);
@@ -120,7 +131,7 @@ public class MainActivity extends ActionBarActivity {
                     RelativeLayout.LayoutParams.FILL_PARENT));
             valueTV.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
             layout.addView(valueTV);
-        } else if (!dupesRemoved.isEmpty() && Allcontacts == false) {
+        } else if (!contactDuplicates.isEmpty() && Allcontacts == false) {
             k = 1;
             alertDialog.setTitle("Duplicates Found!");
             alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
@@ -165,6 +176,76 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+    }
+
+    private void initializeViews() {
+        listView = (ListView) findViewById(R.id.list);
+        button = (ImageButton) findViewById(R.id.button);
+        mySwitch = (Switch) findViewById(R.id.switch1);
+        mySwitch.setChecked(false);
+        valueTV = new TextView(this);
+    }
+
+
+    public void readPhoneContacts(Context context) //This Context parameter is nothing but your Activity class's Context
+    {
+        Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        Integer contactsCount = cursor.getCount(); // get how many contacts you have in your contacts list
+
+
+
+        if (contactsCount > 0)
+        {
+            while(cursor.moveToNext())
+            {
+                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
+                {
+                    //the below cursor will give you details for multiple contacts
+                    Cursor pCursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",
+                            new String[]{id}, null);
+                    // continue till this cursor reaches to all phone numbers which are associated with a contact in the contact list
+                    while (pCursor.moveToNext())
+                    {
+                        int phoneType 		= pCursor.getInt(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                        //String isStarred 		= pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED));
+                        String phoneNo 	= pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        //you will get all phone numbers according to it's type as below switch case.
+                        //Logs.e will print the phone number along with the name in DDMS. you can use these details where ever you want.
+                        String type = null;
+
+                        switch (phoneType)
+                        {
+                            case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                                type = "M";
+                                break;
+                            case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                                type = "H";
+                                break;
+                            case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+                                type = "W";
+                                break;
+                            case ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE:
+                                type = "WM";
+                                break;
+                            case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
+                                type = "O";
+                                break;
+                            default:
+                                break;
+                        }
+
+                        phoneContacts.add(new PhoneContact(phoneNo, contactName, type));
+                        Log.i("Contact details:",phoneNo + ": " + contactName + ": " + type);
+
+                    }
+                    pCursor.close();
+                }
+            }
+            cursor.close();
+        }
     }
 
     SparseBooleanArray checkedItem;
@@ -228,17 +309,46 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public static ArrayList<String> findDuplicates(List<String> listContainingDuplicates) {
-        ArrayList<String> setToReturn = new ArrayList();
+    public ArrayList<PhoneContact> findDuplicates(ArrayList<PhoneContact> listContainingDuplicates) {
+        ArrayList<PhoneContact> duplicatesOrganised = new ArrayList();
+        ArrayList<PhoneContact> setToReturn = new ArrayList();
+
         Collections.sort(listContainingDuplicates);
         int i;
         int size = listContainingDuplicates.size();
 
-        for (i = 1; i < size - 1; i++) {
-            if (listContainingDuplicates.get(i).regionMatches(0, listContainingDuplicates.get(i - 1), 0, 16)) {
-                setToReturn.add(listContainingDuplicates.get(i - 1));
-                if (!(listContainingDuplicates.get(i).regionMatches(0, listContainingDuplicates.get(i + 1), 0, 16))) {
-                    setToReturn.add(listContainingDuplicates.get(i));
+
+        for (i = 0; i < size; i++) {
+            if(i+1 == size){
+                duplicatesOrganised.add(listContainingDuplicates.get(i));
+                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+            }else if (listContainingDuplicates.get(i).getContactNumber().equals(listContainingDuplicates.get(i+1).getContactNumber())) {
+                duplicatesOrganised.add(listContainingDuplicates.get(i));
+                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+            }else{
+                duplicatesOrganised.add(listContainingDuplicates.get(i));
+                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+            }
+        }
+
+        int start = 0;
+        if(!duplicatesOrganised.get(0).getContactNumber().equals(duplicatesOrganised.get(1).getContactNumber())){
+            start = 1;
+        }
+
+        for (i = start; i < size; i++) {
+            if(i+1 == size && duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
+                setToReturn.add(duplicatesOrganised.get(i));
+                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+            } else if(i+1 == size && !duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
+                continue;
+            } else if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())) {
+                setToReturn.add(duplicatesOrganised.get(i));
+                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+            } else if(!duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())){
+                if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())) {
+                    setToReturn.add(duplicatesOrganised.get(i));
+                    Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
                 }
             }
         }
