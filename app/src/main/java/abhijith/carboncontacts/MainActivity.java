@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     ProgressDialog mProgressDialog;
     private long mBackPressed;
     int itemCount;
+    SparseBooleanArray checkedItem;
+    SparseBooleanArray checkedItemPositions;
+    int d, d1;
 
     ArrayList<PhoneContact> phoneContacts;
     ArrayList<PhoneContact> contactDuplicates;
@@ -166,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         mySwitch = (Switch) findViewById(R.id.switch1);
         mySwitch.setChecked(false);
         valueTV = new TextView(this);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+       // toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
     }
 
@@ -175,8 +178,6 @@ public class MainActivity extends AppCompatActivity {
     {
         Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         Integer contactsCount = cursor.getCount(); // get how many contacts you have in your contacts list
-
-
 
         if (contactsCount > 0)
         {
@@ -231,9 +232,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    SparseBooleanArray checkedItem;
-    SparseBooleanArray checkedItemPositions;
-    int d, d1;
+
 
     public void deleteDupes() {
 

@@ -8,7 +8,7 @@ public class PhoneContact implements Comparable<PhoneContact> {
     private String contactID;
 
     PhoneContact(String number, String name, String type, String id){
-        contactNumber = number;
+        contactNumber = number.trim().replaceAll(" ","");
         contactName = name;
         contactType = type;
         contactID = id;
