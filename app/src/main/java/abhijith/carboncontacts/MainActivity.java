@@ -317,8 +317,8 @@ public class MainActivity extends AppCompatActivity {
         ContentResolver contentResolver = this.getContentResolver();
         Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         while (cursor.moveToNext()&&!cursor.isClosed()) {
-            if (cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)).equalsIgnoreCase(name)){
-                if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))==0) {
+            if (cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts._ID)).equalsIgnoreCase(s)) {
+                if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) == 0) {
                     String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                     Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
                     contentResolver.delete(uri, null, null);
