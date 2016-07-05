@@ -12,6 +12,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+/*
+    Activity to set the new runtime permissions for Android M and above.
+    For versions below M, old permission system using Android Manifest
+ */
+
 public class PermissionsActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
@@ -29,10 +34,12 @@ public class PermissionsActivity extends AppCompatActivity {
                 ContextCompat.checkSelfPermission(PermissionsActivity.this,
                         Manifest.permission.WRITE_CONTACTS)
                         == PackageManager.PERMISSION_GRANTED) {
+
+            //If permission given, start the Main Carbon Contacts (CC) activity
             Intent intent = new Intent(PermissionsActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            finish(); // call this to finish the current activity
+            finish();
         }
 
         Button readPerm = (Button) findViewById(R.id.readPerm);
@@ -45,26 +52,19 @@ public class PermissionsActivity extends AppCompatActivity {
                 if (ContextCompat.checkSelfPermission(PermissionsActivity.this,
                         Manifest.permission.READ_CONTACTS)
                         != PackageManager.PERMISSION_GRANTED) {
-
-                    // Should we show an explanation?
                     if (ActivityCompat.shouldShowRequestPermissionRationale(PermissionsActivity.this,
                             Manifest.permission.READ_CONTACTS)) {
                         //Toast.makeText(PermissionsActivity.this,"Read contacts",Toast.LENGTH_LONG).show();
-                        // Show an expanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
+                        //TODO: Show an expanation to the user *asynchronously* -- UI to be done
                         ActivityCompat.requestPermissions(PermissionsActivity.this,
                                 new String[]{Manifest.permission.READ_CONTACTS},
                                 MY_PERMISSIONS_REQUEST_READ_CONTACTS);
 
                     } else {
-
                         // No explanation needed, we can request the permission.
-
                         ActivityCompat.requestPermissions(PermissionsActivity.this,
                                 new String[]{Manifest.permission.READ_CONTACTS},
                                 MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-
                         // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                         // app-defined int constant. The callback method gets the
                         // result of the request.
@@ -73,6 +73,8 @@ public class PermissionsActivity extends AppCompatActivity {
             }
         });
 
+        //Below permission not needed as One single READ permission appears to do the job
+        //TODO: remove unnecessary permissions
 
         writePerm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,6 +110,8 @@ public class PermissionsActivity extends AppCompatActivity {
             }
         });
 
+
+        //Proceed button that goes to mainactivity only if the desired permissions are given
         grantedPerm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,12 +141,14 @@ public class PermissionsActivity extends AppCompatActivity {
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Read Contacts permission granted", Toast.LENGTH_SHORT).show();
 
-
-
             } else {
                 Toast.makeText(this, "Read Contacts permission denied", Toast.LENGTH_SHORT).show();
             }
-        } else if(requestCode == MY_PERMISSIONS_REQUEST_WRITE_CONTACTS) {
+        }
+        //Below callback not needed is one permission does the job
+        //TODO: remove unnecessary callbacks
+
+        else if(requestCode == MY_PERMISSIONS_REQUEST_WRITE_CONTACTS) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Write Contacts permission granted", Toast.LENGTH_SHORT).show();
