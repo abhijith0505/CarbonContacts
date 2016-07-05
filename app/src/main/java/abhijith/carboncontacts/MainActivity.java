@@ -87,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        //Delete Contacts button
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDupes();
+            }
+        });
+
 
         //TODO: to be cleaned
         k = 0;
@@ -177,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
     {
         Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         Integer contactsCount = cursor.getCount(); //get how many contacts you have in your contacts list
-
         if (contactsCount > 0)
         {
             while(cursor.moveToNext())
@@ -198,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
                         String phoneNo 	= pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                         //you will get all phone numbers according to it's type as below switch case.
                         //Logs.e will print the phone number along with the name in DDMS. you can use these details where ever you want.
+                        String phoneNumberID = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
                         String type = null;
 
                         switch (phoneType)
@@ -221,8 +229,8 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                         }
 
-                        phoneContacts.add(new PhoneContact(phoneNo, contactName, type, id));
-                        Log.i("Contact details:",phoneNo + ": " + contactName + ": " + type);
+                        phoneContacts.add(new PhoneContact(phoneNo, contactName, type, id, phoneNumberID));
+                        Log.i("Contact details:",phoneNo + ": " + contactName + ": " + type + ": " + id + ": " + phoneNumberID);
                     }
                     pCursor.close();
                 }
@@ -323,15 +331,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void updateContact(String contactId, String type) {
-        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        String selectPhone = ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "='" +
-                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "'" + " AND " + ContactsContract.CommonDataKinds.Phone.TYPE + "=?";
-        String[] phoneArgs = new String[]{contactId, type};
-        //ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI).withSelection(selectPhone, phoneArgs).build());
+    public void updateContact(String contactId, String phoneNumberID) {
+        ContentResolver contentResolver = this.getContentResolver();
+        Cursor cur = contentResolver.query(ContactsContract.RawContacts.CONTENT_URI,
+                new String[]{ContactsContract.RawContacts._ID},
+                ContactsContract.RawContacts.CONTACT_ID + "=?",
+                new String[] {contactId}, null);
+
+        int rowId=0;
+
+        if(cur.moveToFirst()){
+            rowId = cur.getInt(cur.getColumnIndex(ContactsContract.RawContacts._ID));
+        }
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+        String selectPhone = ContactsContract.RawContacts.Data.RAW_CONTACT_ID + " = ? AND " +
+                ContactsContract.RawContacts.Data.MIMETYPE + " = ? AND " +
+                ContactsContract.CommonDataKinds.Phone._ID + " = ?";
+
+        String[] phoneArgs = new String[] { Integer.toString(rowId),
+                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+                phoneNumberID.toString()};
+
         ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
-                .withSelection(ContactsContract.Contacts._ID + "=? and " + ContactsContract.RawContacts.Data.MIMETYPE + "=?", new String[]{String.valueOf(contactId), ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE})
-                .build());
+                .withSelection(selectPhone, phoneArgs).build());
+
+        //Deletes entire contact
+        /*ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+        String[] phoneArgs = new String[]{contactId};
+        ops.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI)
+                .withSelection(ContactsContract.RawContacts._ID + "=?", phoneArgs)
+                .build());*/
+
         try {
             getApplicationContext().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
         } catch (RemoteException e) {
@@ -342,37 +373,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-    private String[] getContactInfo(String number) {
-        String[] contactInfo = new String[3];
-
-        ContentResolver context = getContentResolver();
-        Uri lookupUri = Uri.withAppendedPath(
-                ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-                Uri.encode(number));
-
-        String[] mPhoneNumberProjection = {ContactsContract.Contacts._ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.PhoneLookup.TYPE};
-
-        Cursor cur = context.query(lookupUri, mPhoneNumberProjection, null, null, null);
-
-        if (cur.moveToFirst()) {
-            contactInfo[0] = cur.getString(0);
-            contactInfo[1] = cur.getString(2);
-            contactInfo[2] = cur.getString(1);
-            if (contactInfo[2] == null || contactInfo[2].isEmpty()) {
-                contactInfo[2] = "";
-            }
-            cur.close();
-            return contactInfo;
-        }
-
-
-        return contactInfo;
-
-
-    }
-
     private class LongOperation extends AsyncTask<String, Integer, String> {
         @Override
         protected String doInBackground(String... params) {
@@ -381,32 +381,22 @@ public class MainActivity extends AppCompatActivity {
             if (Allcontacts == true) {
                 for (int i = 0, t = 1; i <itemCount; t++, i++) {
                     if (checkedItemPositions.get(i)) {
-                        String[] info = new String[3];
-                        String s = listItems.get(i).substring(0, 14);
-                        String id1 = listItems.get(i);
-                        String id = id1.substring(id1.length() - 10, id1.length()).trim().replaceAll(" ", "");
-                        info = getContactInfo(s);
-                        updateContact(id, info[1]);
-                        emptyRemover(id,info[2]);
+                        String id = phoneContacts.get(i).getContactID();
+                        updateContact(id, phoneContacts.get(i).getContactNumberID());
+                        emptyRemover(id,phoneContacts.get(i).getContactName());
                         publishProgress((int) (t * 100 / itemCount));
                     }
-
                     d1 = 1;
                 }
             } else {
                 for (int i = 0, t = 1; i <itemCount; t++, i++) {
                     if (checkedItemPositions.get(i)) {
-                        String[] info = new String[3];
-                        String s = dupesRemoved.get(i).substring(0, 14);
-                        String id1 = dupesRemoved.get(i);
-                        String id = id1.substring(id1.length() - 10, id1.length()).trim().replaceAll(" ", "");
-                        info = getContactInfo(s);
-                        updateContact(id, info[1]);
-                        emptyRemover(id,info[2]);
+                        String id = contactDuplicates.get(i).getContactID();
+                        updateContact(id, contactDuplicates.get(i).getContactNumberID());
+                        emptyRemover(id,contactDuplicates.get(i).getContactName());
                         publishProgress((int) (t * 100 / itemCount));
                     }
                     d = 1;
-
                 }
             }
 
@@ -526,7 +516,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
 
-       // adapter.notifyDataSetChanged();
+        // adapter.notifyDataSetChanged();
         //listView.invalidateViews();
         super.onPause();
     }
@@ -534,7 +524,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPostResume() {
-       // adapter.notifyDataSetChanged();
+        // adapter.notifyDataSetChanged();
         //listView.invalidateViews();
         super.onPostResume();
 
@@ -553,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
 
         //adapter.notifyDataSetChanged();
-       //listView.invalidateViews();
+        //listView.invalidateViews();
         super.onResume();
     }
 }

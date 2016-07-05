@@ -12,14 +12,16 @@ public class PhoneContact implements Comparable<PhoneContact> {
     private String contactName;
     private String contactType;
     private String contactID;
+    private String contactNumberID;
 
     //TODO: Add more fields like display pic, email etc for better user experience
 
-    PhoneContact(String number, String name, String type, String id){
+    PhoneContact(String number, String name, String type, String id, String phoneNumberID){
         contactNumber = number.trim().replaceAll(" ","");
         contactName = name;
         contactType = type;
         contactID = id;
+        contactNumberID = phoneNumberID;
     }
 
     /*Getters for each phone contact field*/
@@ -35,6 +37,9 @@ public class PhoneContact implements Comparable<PhoneContact> {
     }
     String getContactID(){
         return contactID;
+    }
+    String getContactNumberID(){
+        return contactNumberID;
     }
 
     //Comparator to sort the PhoneContact objects according to the number
