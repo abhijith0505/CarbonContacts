@@ -8,14 +8,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
@@ -34,17 +34,17 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
+
 
     ListView listView;
-    ArrayList<String> listItems = new ArrayList<String>();
-    ArrayList<String> PhonelistItems = new ArrayList<String>();
+
+    ArrayList<String> listItems = new ArrayList<>();
     ArrayList<String> dupesRemoved = listItems;
-    ArrayList<String> allContacts = new ArrayList<String>();
-    ArrayList<String> newList = new ArrayList<String>();
+    ArrayList<String> allContacts = new ArrayList<>();
+    ArrayList<String> onlyDuplicates = new ArrayList<>();
     ArrayAdapter<String> adapter = null;
     ImageButton button;
     int k = 0, p = 0;
@@ -59,19 +59,18 @@ public class MainActivity extends ActionBarActivity {
 
     ArrayList<PhoneContact> phoneContacts;
     ArrayList<PhoneContact> contactDuplicates;
-    //PhoneContact[] phoneContacts;
+
+    FloatingActionButton fab;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        android.support.v7.app.ActionBar bar = MainActivity.this.getSupportActionBar();
-        bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#556e2d")));
         setContentView(R.layout.activity_main);
+        initializeViews();
 
         phoneContacts = new ArrayList<>();
         contactDuplicates = new ArrayList<>();
-
-        initializeViews();
 
         readPhoneContacts(MainActivity.this);
 
@@ -82,37 +81,18 @@ public class MainActivity extends ActionBarActivity {
 
 
 
-       /* String order = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
-        Cursor curLog = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, order);
-
-
-        String listString = null;
-        if (curLog != null) {
-
-            while (curLog.moveToNext()) {
-                String str = curLog.getString(curLog.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                String id = curLog.getString(curLog.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-                String name = curLog.getString(curLog.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
-
-                listItems.add(str.trim().replaceAll(" ", "") + "                    :" + name + "           " + id);
-
-            }
-        }
-
-        curLog.close();*/
-
         contactDuplicates = findDuplicates(phoneContacts);
 
         for (PhoneContact contact : phoneContacts) {
             allContacts.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
         }
         for (PhoneContact contact : contactDuplicates) {
-            newList.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
+            onlyDuplicates.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
 
         }
 
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, newList);
+        adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, onlyDuplicates);
         listView.setAdapter(adapter);
         listView.setItemsCanFocus(false);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -161,13 +141,13 @@ public class MainActivity extends ActionBarActivity {
                     Allcontacts = false;
                     if (dupesRemoved.isEmpty()) {
                         valueTV.setVisibility(View.VISIBLE);
-                        adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, newList);
+                        adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
                         listView.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
                         listView.invalidateViews();
                     } else {
                         valueTV.setVisibility(View.INVISIBLE);
-                        adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, newList);
+                        adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
                         listView.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
                         listView.invalidateViews();
@@ -175,15 +155,19 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
-
     }
+
+
+
 
     private void initializeViews() {
         listView = (ListView) findViewById(R.id.list);
-        button = (ImageButton) findViewById(R.id.button);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         mySwitch = (Switch) findViewById(R.id.switch1);
         mySwitch.setChecked(false);
         valueTV = new TextView(this);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
     }
 
 
@@ -251,7 +235,7 @@ public class MainActivity extends ActionBarActivity {
     SparseBooleanArray checkedItemPositions;
     int d, d1;
 
-    public void deleteDupes(View view) {
+    public void deleteDupes() {
 
         mProgressDialog.setMessage("Deleting...");
         mProgressDialog.setIndeterminate(false);
@@ -432,7 +416,7 @@ public class MainActivity extends ActionBarActivity {
                 for (int i = listView.getCount() - 1; i >= 0; i--) {
                     if (checkedItemPositions.get(i)) {
                         if (checkedItemPositions.get(i)) {
-                            adapter.remove(newList.get(i));
+                            adapter.remove(onlyDuplicates.get(i));
                         }
                     }
                 }
@@ -521,15 +505,15 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
 
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
+        //adapter.notifyDataSetChanged();
+        //listView.invalidateViews();
         super.onStart();
     }
 
     @Override
     protected void onRestart() {
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
+        //adapter.notifyDataSetChanged();
+        //listView.invalidateViews();
         super.onRestart();
 
     }
@@ -537,17 +521,16 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
 
-        adapter.notifyDataSetChanged();
-
-        listView.invalidateViews();
+       // adapter.notifyDataSetChanged();
+        //listView.invalidateViews();
         super.onPause();
     }
 
 
     @Override
     protected void onPostResume() {
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
+       // adapter.notifyDataSetChanged();
+        //listView.invalidateViews();
         super.onPostResume();
 
 
@@ -564,8 +547,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
 
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
+        //adapter.notifyDataSetChanged();
+       //listView.invalidateViews();
         super.onResume();
     }
 }

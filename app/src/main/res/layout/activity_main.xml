@@ -1,43 +1,35 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#4eb3da51"
-    android:orientation="vertical">
-    <RelativeLayout  android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/rr"
-        android:orientation="vertical"
-        android:layout_margin="15dp">
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="All contacts"
-            android:textStyle="bold|italic"
-            android:id="@+id/switch1"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerHorizontal="true" />
-        <ListView
-            android:layout_below="@+id/switch1"
-            android:id="@+id/list"
-            android:layout_marginTop="7dp"
-            android:background="@drawable/elesimulation"
+    android:fitsSystemWindows="true"
+    tools:context="abhijith.carboncontacts.MainActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </RelativeLayout>
-    <ImageButton
-        android:id="@+id/button"
-        android:onClick="deleteDupes"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="7dp"
-        android:layout_marginRight="7dp"
-        android:background="@drawable/float_but"
-        android:src="@drawable/fab1"
-        android:tint="@android:color/white"/>
-</RelativeLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_main"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/fab1" />
+
+</android.support.design.widget.CoordinatorLayout>
