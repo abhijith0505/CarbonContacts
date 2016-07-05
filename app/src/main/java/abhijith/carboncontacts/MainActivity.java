@@ -15,7 +15,6 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
@@ -25,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -264,7 +262,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         int start = 0;
-        if(!duplicatesOrganised.get(0).getContactNumber().equals(duplicatesOrganised.get(1).getContactNumber())){
+        if(!duplicatesOrganised.isEmpty() &&
+                !duplicatesOrganised.get(0).getContactNumber().equals(duplicatesOrganised.get(1).getContactNumber()) ){
             start = 1;
         }
 
@@ -328,6 +327,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        cursor.close();
     }
 
 
@@ -370,6 +370,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (OperationApplicationException e) {
             e.printStackTrace();
         }
+        cur.close();
     }
 
 
