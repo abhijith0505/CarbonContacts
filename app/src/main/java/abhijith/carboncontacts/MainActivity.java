@@ -38,15 +38,18 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    //Cleaned code
     ListView listView;
+    ArrayList<PhoneContact> phoneContacts;
+    ArrayList<PhoneContact> contactDuplicates;
+    FloatingActionButton fab;
 
+    //TODO: Proper nomenclature and cleaning required
     ArrayList<String> listItems = new ArrayList<>();
     ArrayList<String> dupesRemoved = listItems;
     ArrayList<String> allContacts = new ArrayList<>();
     ArrayList<String> onlyDuplicates = new ArrayList<>();
     ArrayAdapter<String> adapter = null;
-    ImageButton button;
     int k = 0, p = 0;
     boolean Allcontacts;
     Switch mySwitch;
@@ -60,32 +63,22 @@ public class MainActivity extends AppCompatActivity {
     SparseBooleanArray checkedItemPositions;
     int d, d1;
 
-    ArrayList<PhoneContact> phoneContacts;
-    ArrayList<PhoneContact> contactDuplicates;
-
-    FloatingActionButton fab;
-    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         initializeViews();
 
-        phoneContacts = new ArrayList<>();
+        phoneContacts = new ArrayList<>(); //Contains all contacts
         contactDuplicates = new ArrayList<>();
 
+        //Reads all the contacts and stores them in phoneContacts Arraylist
         readPhoneContacts(MainActivity.this);
-
-        k = 0;
-        p = 0;
-        Allcontacts = false;
-        mProgressDialog = new ProgressDialog(this);
-
-
-
-        contactDuplicates = findDuplicates(phoneContacts);
-
+        contactDuplicates = findDuplicates(phoneContacts); //Contains all duplicated entries
+        //populates arraylists for simple listview adapter
+        //TODO: use a custom adapter for better UX
         for (PhoneContact contact : phoneContacts) {
             allContacts.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
         }
@@ -94,6 +87,12 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+
+        //TODO: to be cleaned
+        k = 0;
+        p = 0;
+        Allcontacts = false;
+        mProgressDialog = new ProgressDialog(this);
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, onlyDuplicates);
         listView.setAdapter(adapter);
@@ -162,22 +161,22 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+    //Cleaned
+    //View initialiser
     private void initializeViews() {
         listView = (ListView) findViewById(R.id.list);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         mySwitch = (Switch) findViewById(R.id.switch1);
         mySwitch.setChecked(false);
         valueTV = new TextView(this);
-       // toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
     }
 
-
-    public void readPhoneContacts(Context context) //This Context parameter is nothing but your Activity class's Context
+    //Cleaned
+    //Retrieves all contacts
+    public void readPhoneContacts(Context context)
     {
         Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-        Integer contactsCount = cursor.getCount(); // get how many contacts you have in your contacts list
+        Integer contactsCount = cursor.getCount(); //get how many contacts you have in your contacts list
 
         if (contactsCount > 0)
         {
@@ -232,6 +231,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Cleaned
+    //Returns all occurences of the duplicate entries
+    //TODO: Shorten code if possible
+    public ArrayList<PhoneContact> findDuplicates(ArrayList<PhoneContact> listContainingDuplicates) {
+        ArrayList<PhoneContact> duplicatesOrganised = new ArrayList();
+        ArrayList<PhoneContact> setToReturn = new ArrayList();
+
+        Collections.sort(listContainingDuplicates);
+        int i, size = listContainingDuplicates.size();
+
+        //Orders all the duplicates together along with the unique(non-duplicate)
+        for (i = 0; i < size; i++) {
+            if(i+1 == size){
+                duplicatesOrganised.add(listContainingDuplicates.get(i));
+                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+            }else if (listContainingDuplicates.get(i).getContactNumber().equals(listContainingDuplicates.get(i+1).getContactNumber())) {
+                duplicatesOrganised.add(listContainingDuplicates.get(i));
+                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+            }else{
+                duplicatesOrganised.add(listContainingDuplicates.get(i));
+                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+            }
+        }
+
+        int start = 0;
+        if(!duplicatesOrganised.get(0).getContactNumber().equals(duplicatesOrganised.get(1).getContactNumber())){
+            start = 1;
+        }
+
+        //setToReturn contains only ordered duplicates
+        for (i = start; i < size; i++) {
+            if(i+1 == size && duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
+                setToReturn.add(duplicatesOrganised.get(i));
+                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+            } else if(i+1 == size && !duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
+                continue;
+            } else if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())) {
+                setToReturn.add(duplicatesOrganised.get(i));
+                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+            } else if(!duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())){
+                if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())) {
+                    setToReturn.add(duplicatesOrganised.get(i));
+                    Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+                }
+            }
+        }
+        return setToReturn;
+    }
+
+    //________________________________________________________________________________________________________________________________
+    //TODO: Remaining functions to be cleaned
 
 
     public void deleteDupes() {
@@ -291,51 +341,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public ArrayList<PhoneContact> findDuplicates(ArrayList<PhoneContact> listContainingDuplicates) {
-        ArrayList<PhoneContact> duplicatesOrganised = new ArrayList();
-        ArrayList<PhoneContact> setToReturn = new ArrayList();
 
-        Collections.sort(listContainingDuplicates);
-        int i;
-        int size = listContainingDuplicates.size();
-
-
-        for (i = 0; i < size; i++) {
-            if(i+1 == size){
-                duplicatesOrganised.add(listContainingDuplicates.get(i));
-                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
-            }else if (listContainingDuplicates.get(i).getContactNumber().equals(listContainingDuplicates.get(i+1).getContactNumber())) {
-                duplicatesOrganised.add(listContainingDuplicates.get(i));
-                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
-            }else{
-                duplicatesOrganised.add(listContainingDuplicates.get(i));
-                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
-            }
-        }
-
-        int start = 0;
-        if(!duplicatesOrganised.get(0).getContactNumber().equals(duplicatesOrganised.get(1).getContactNumber())){
-            start = 1;
-        }
-
-        for (i = start; i < size; i++) {
-            if(i+1 == size && duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
-                setToReturn.add(duplicatesOrganised.get(i));
-                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
-            } else if(i+1 == size && !duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
-                continue;
-            } else if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())) {
-                setToReturn.add(duplicatesOrganised.get(i));
-                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
-            } else if(!duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())){
-                if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())) {
-                    setToReturn.add(duplicatesOrganised.get(i));
-                    Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
-                }
-            }
-        }
-        return setToReturn;
-    }
 
 
     private String[] getContactInfo(String number) {
