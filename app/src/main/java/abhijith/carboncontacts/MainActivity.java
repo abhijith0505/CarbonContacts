@@ -6,6 +6,7 @@ import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
@@ -504,27 +505,28 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-
-        //noinspection SimplifiableIfStatement
-
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_about:
+                startActivity(new Intent(MainActivity.this, About.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
     @Override
     protected void onStart() {
 
-        //adapter.notifyDataSetChanged();
-        //listView.invalidateViews();
+        adapter.notifyDataSetChanged();
+        listView.invalidateViews();
         super.onStart();
     }
 
     @Override
     protected void onRestart() {
-        //adapter.notifyDataSetChanged();
-        //listView.invalidateViews();
+        adapter.notifyDataSetChanged();
+        listView.invalidateViews();
         super.onRestart();
 
     }
@@ -532,16 +534,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
 
-        // adapter.notifyDataSetChanged();
-        //listView.invalidateViews();
+         adapter.notifyDataSetChanged();
+         listView.invalidateViews();
         super.onPause();
     }
 
 
     @Override
     protected void onPostResume() {
-        // adapter.notifyDataSetChanged();
-        //listView.invalidateViews();
+         adapter.notifyDataSetChanged();
+         listView.invalidateViews();
         super.onPostResume();
 
 
@@ -558,8 +560,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
 
-        //adapter.notifyDataSetChanged();
-        //listView.invalidateViews();
+        adapter.notifyDataSetChanged();
+        listView.invalidateViews();
         super.onResume();
     }
 }
