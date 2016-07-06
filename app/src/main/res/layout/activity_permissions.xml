@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:text="Read contacts"
         android:id="@+id/readPerm"
+        android:background="@drawable/fab"
         android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/writePerm"
         android:layout_alignStart="@+id/writePerm" />
@@ -24,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Write Contacts"
+        android:background="@drawable/fab"
         android:id="@+id/writePerm"
         android:layout_above="@+id/readPerm"
         android:layout_centerHorizontal="true"
@@ -33,6 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Proceed"
+        android:background="@drawable/fab"
         android:id="@+id/granted"
         android:layout_below="@+id/readPerm"
         android:layout_centerHorizontal="true"
