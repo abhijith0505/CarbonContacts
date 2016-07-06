@@ -7,5 +7,6 @@
     <string name="butText">Delete</string>
     <string name="dupText">Duplicates Found!</string>
     <string name="okText">OK</string>
+    <string name="permissionString">We need permission to access your phone contacts and to delete them.\n It\'s a contact deleting app after all!</string>
 
 </resources>

@@ -11,33 +11,22 @@
 
     tools:context="abhijith.carboncontacts.PermissionsActivity">
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Read contacts"
-        android:id="@+id/readPerm"
-        android:background="@drawable/fab"
+        android:text="@string/permissionString"
+        android:id="@+id/permText"
         android:layout_centerVertical="true"
-        android:layout_alignLeft="@+id/writePerm"
-        android:layout_alignStart="@+id/writePerm" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Write Contacts"
-        android:background="@drawable/fab"
-        android:id="@+id/writePerm"
-        android:layout_above="@+id/readPerm"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Proceed"
-        android:background="@drawable/fab"
         android:id="@+id/granted"
-        android:layout_below="@+id/readPerm"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="46dp" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="46dp"
+        android:layout_alignParentRight="true" />
 </RelativeLayout>
