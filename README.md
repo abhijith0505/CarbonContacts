@@ -13,10 +13,10 @@ Allows you to delete these unwanted occurrences.
 Updated to house the new <strong>Android M</strong> runtime permissions.
 
 #Screenshots
-![](https://github.com/abhijith0505/CarbonContacts/tree/master/Screenshots/sc1.png?raw=true)
-![](https://github.com/abhijith0505/CarbonContacts/tree/master/Screenshots/sc2.png?raw=true)
-![](https://github.com/abhijith0505/CarbonContacts/tree/master/Screenshots/sc3.png?raw=true)
-![](https://github.com/abhijith0505/CarbonContacts/tree/master/Screenshots/sc4.png?raw=true)
+![](https://raw.github.com/abhijith0505/CarbonContacts/tree/master/Screenshots/sc1.png?raw=true)
+![](https://raw.github.com/abhijith0505/CarbonContacts/tree/master/Screenshots/sc2.png?raw=true)
+![](https://raw.github.com/abhijith0505/CarbonContacts/tree/master/Screenshots/sc3.png?raw=true)
+![](https://raw.github.com/abhijith0505/CarbonContacts/tree/master/Screenshots/sc4.png?raw=true)
 
 
 
