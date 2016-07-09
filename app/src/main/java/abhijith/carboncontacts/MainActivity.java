@@ -23,8 +23,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ListView;
@@ -32,6 +30,10 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,15 +50,15 @@ public class MainActivity extends AppCompatActivity {
     //TODO: Proper nomenclature and cleaning required
     ArrayList<String> allContacts = new ArrayList<>();
     ArrayList<String> onlyDuplicates = new ArrayList<>();
+    ArrayList<String> whatsAppIDs = new ArrayList<>();
     ArrayAdapter<String> adapter = null;
     int k = 0, p = 0;
     boolean Allcontacts;
     Switch mySwitch;
-    RelativeLayout layout;
-    TextView valueTV;
+
     int flag=0;
     ProgressDialog mProgressDialog;
-    private long mBackPressed;
+
     int itemCount;
     SparseBooleanArray checkedItem;
     SparseBooleanArray checkedItemPositions;
@@ -69,8 +71,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initializeViews();
+
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713");
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
         phoneContacts = new ArrayList<>(); //Contains all contacts
         contactDuplicates = new ArrayList<>();
+
+        loadWhatsAppForTesting();
 
         //Reads all the contacts and stores them in phoneContacts Arraylist
         readPhoneContacts(MainActivity.this);
@@ -114,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         adapter.notifyDataSetChanged();
         listView.invalidateViews();
+        RelativeLayout layout;
+        final TextView valueTV =  new TextView(this);
         if (contactDuplicates.isEmpty() && Allcontacts == false) {
             layout = (RelativeLayout) findViewById(R.id.rr);
             valueTV.setText("No Duplicates!");
@@ -151,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                         fab.hide();
                     }
                     else    fab.show();
+
                     adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, allContacts);
                     listView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
@@ -180,6 +193,81 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void loadWhatsAppForTesting() {
+        ContentResolver cr = MainActivity.this.getContentResolver();
+
+//RowContacts for filter Account Types
+        Cursor contactCursor = cr.query(
+                ContactsContract.RawContacts.CONTENT_URI,
+                new String[]{ContactsContract.RawContacts._ID,
+                        ContactsContract.RawContacts.CONTACT_ID},
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "= ?",
+                new String[]{"com.whatsapp"},
+                null);
+
+//ArrayList for Store Whatsapp Contact
+        //ArrayList<String> myWhatsappContacts = new ArrayList<>();
+
+        if (contactCursor != null) {
+            if (contactCursor.getCount() > 0) {
+                if (contactCursor.moveToFirst()) {
+                    do {
+                        //whatsappContactId for get Number,Name,Id ect... from  ContactsContract.CommonDataKinds.Phone
+                        String whatsappContactId = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.RawContacts.CONTACT_ID));
+
+                        if (whatsappContactId != null) {
+                            //Get Data from ContactsContract.CommonDataKinds.Phone of Specific CONTACT_ID
+                            Cursor whatsAppContactCursor = cr.query(
+                                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                    new String[]{ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                                            ContactsContract.CommonDataKinds.Phone.NUMBER,
+                                            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME},
+                                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                    new String[]{whatsappContactId}, null);
+
+                            if (whatsAppContactCursor != null) {
+                                whatsAppContactCursor.moveToFirst();
+                                String id = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+                                String name = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                                String number = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+                                String phoneNumberID;
+                                //Log.i("whatsapp", " WhatsApp contact id  :  " + id);
+                                //Log.i("whatsapp", " WhatsApp contact name :  " + name);
+                                ///Log.i("whatsapp", " WhatsApp contact number :  " + number);
+                                //if (Integer.parseInt(whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
+                                {
+                                    //the below cursor will give you details for multiple contacts
+                                    Cursor pCursor = MainActivity.this.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,
+                                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ? and " +ContactsContract.RawContacts.ACCOUNT_TYPE + "= ?" ,
+                                            new String[]{id, "com.whatsapp"}, null);
+                                    // continue till this cursor reaches to all phone numbers which are associated with a contact in the contact list
+                                    while (pCursor.moveToNext())
+                                    {
+                                        //String isStarred = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED));
+                                        //String phoneNo 	= pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                        //you will get all phone numbers according to it's type as below switch case.
+                                        //Logs.e will print the phone number along with the name in DDMS. you can use these details where ever you want.
+                                        phoneNumberID = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
+                                        whatsAppIDs.add(phoneNumberID);
+                                        //Log.i("whatsapp", " WhatsApp contact numberID :  " + phoneNumberID);
+                                    }
+                                    pCursor.close();
+                                }
+                                whatsAppContactCursor.close();
+
+                                //Add Number to ArrayList
+                                //myWhatsappContacts.add(number);
+
+
+                            }
+                        }
+                    } while (contactCursor.moveToNext());
+                    contactCursor.close();
+                }
+            }
+        }
+    }
 
 
     //Cleaned
@@ -189,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         mySwitch = (Switch) findViewById(R.id.switch1);
         mySwitch.setChecked(false);
-        valueTV = new TextView(this);
+
     }
 
     //Cleaned
@@ -241,14 +329,40 @@ public class MainActivity extends AppCompatActivity {
                             default:
                                 break;
                         }
-
-                        phoneContacts.add(new PhoneContact(phoneNo, contactName, type, id, phoneNumberID));
-                        Log.i("Contact details:",phoneNo + ": " + contactName + ": " + type + ": " + id + ": " + phoneNumberID);
+                        if(!whatsAppIDs.contains(phoneNumberID))
+                            phoneContacts.add(new PhoneContact(phoneNo, contactName, type, id, phoneNumberID));
+                        //Log.i("Contact details:",phoneNo + ": " + contactName + ": " + type + ": " + id + ": " + phoneNumberID);
                     }
                     pCursor.close();
                 }
             }
             cursor.close();
+        }
+    }
+
+    private void refreshLists() {
+        phoneContacts.clear();
+        contactDuplicates.clear();
+        allContacts.clear();
+        onlyDuplicates.clear();
+        readPhoneContacts(MainActivity.this);
+        if (phoneContacts.size() > 1)
+            contactDuplicates = findDuplicates(phoneContacts); //Contains all duplicated entries
+
+        if(contactDuplicates.size() == 0){
+            fab.hide();
+        } else {
+            fab.show();
+
+        }
+        //populates arraylists for simple listview adapter
+        //TODO: use a custom adapter for better UX
+        for (PhoneContact contact : phoneContacts) {
+            allContacts.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
+        }
+        for (PhoneContact contact : contactDuplicates) {
+            onlyDuplicates.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
+
         }
     }
 
@@ -266,13 +380,13 @@ public class MainActivity extends AppCompatActivity {
         for (i = 0; i < size; i++) {
             if(i+1 == size){
                 duplicatesOrganised.add(listContainingDuplicates.get(i));
-                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+                //Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
             }else if (listContainingDuplicates.get(i).getContactNumber().equals(listContainingDuplicates.get(i+1).getContactNumber())) {
                 duplicatesOrganised.add(listContainingDuplicates.get(i));
-                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+                //Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
             }else{
                 duplicatesOrganised.add(listContainingDuplicates.get(i));
-                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+                //Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
             }
         }
 
@@ -287,16 +401,16 @@ public class MainActivity extends AppCompatActivity {
         for (i = start; i < size; i++) {
             if(i+1 == size && duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
                 setToReturn.add(duplicatesOrganised.get(i));
-                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+                //Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
             } else if(i+1 == size && !duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
                 continue;
             } else if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())) {
                 setToReturn.add(duplicatesOrganised.get(i));
-                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+                //Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
             } else if(!duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())){
                 if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())) {
                     setToReturn.add(duplicatesOrganised.get(i));
-                    Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+                    //Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
                 }
             }
         }
@@ -390,6 +504,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+
     private class LongOperation extends AsyncTask<String, Integer, String> {
         @Override
         protected String doInBackground(String... params) {
@@ -464,6 +580,7 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 listView.invalidateViews();
             }
+            refreshLists();
             mProgressDialog.dismiss();
         }
 
@@ -479,8 +596,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+    private long mBackPressed;
     @Override
     public void onBackPressed() {
+
         if (mBackPressed + 2000 > System.currentTimeMillis()) {
             adapter.notifyDataSetChanged();
             listView.invalidateViews();
@@ -534,16 +654,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
 
-         adapter.notifyDataSetChanged();
-         listView.invalidateViews();
+        adapter.notifyDataSetChanged();
+        listView.invalidateViews();
         super.onPause();
     }
 
 
     @Override
     protected void onPostResume() {
-         adapter.notifyDataSetChanged();
-         listView.invalidateViews();
+        adapter.notifyDataSetChanged();
+        listView.invalidateViews();
         super.onPostResume();
 
 

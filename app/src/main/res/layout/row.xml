@@ -5,12 +5,12 @@
     android:id="@+id/checkedTextView1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="35dp"
+    android:minHeight="45dp"
     android:textAlignment="gravity"
     android:layout_weight="1"
     android:gravity="center_vertical|start"
     android:layout_gravity="center_vertical"
     android:paddingLeft="15dp"
     android:checked="false"
-    android:clickable="false"
-    android:paddingRight="20dp" />
+    android:clickable="false">
+</CheckedTextView>

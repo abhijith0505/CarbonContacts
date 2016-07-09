@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -29,9 +28,9 @@ public class PermissionsActivity extends AppCompatActivity {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        getSupportActionBar().hide();
-        setContentView(R.layout.activity_permissions);
+       getSupportActionBar().hide();
 
+        setContentView(R.layout.activity_permission);
         if (ContextCompat.checkSelfPermission(PermissionsActivity.this,
                 Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED &&

@@ -8,5 +8,8 @@
     <string name="dupText">Duplicates Found!</string>
     <string name="okText">OK</string>
     <string name="permissionString">We need permission to access your phone contacts to delete them.\n It\'s a contact deleting app after all!</string>
+    <string name="banner_ad_unit_id">ca-app-pub-4188872795654365/4821370134</string>
+    <string name="banner_ad_unit_test_id">ca-app-pub-3940256099942544/6300978111</string>
+
 
 </resources>
