@@ -13,9 +13,9 @@ Allows you to delete these unwanted occurrences.
 Updated to house the new <strong>Android M</strong> runtime permissions.
 
 #Screenshots
-![](Screenshots/sc1.png?raw=true) \t   	![](Screenshots/sc2.png?raw=true)
+![    ](Screenshots/sc1.png?raw=true)   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![    ](Screenshots/sc2.png?raw=true)
 
-![](Screenshots/sc3.png?raw=true) \t 	![](Screenshots/sc4.png?raw=true)
+![    ](Screenshots/sc3.png?raw=true)  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![    ](Screenshots/sc4.png?raw=true)
  
 
 
