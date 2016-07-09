@@ -80,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
         phoneContacts = new ArrayList<>(); //Contains all contacts
         contactDuplicates = new ArrayList<>();
 
-        loadWhatsAppForTesting();
+        //loads WhatsApp contact number IDs
+        getWhatsAppContactIDs();
 
         //Reads all the contacts and stores them in phoneContacts Arraylist
         readPhoneContacts(MainActivity.this);
@@ -193,10 +194,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadWhatsAppForTesting() {
+    private void getWhatsAppContactIDs() {
         ContentResolver cr = MainActivity.this.getContentResolver();
 
-//RowContacts for filter Account Types
+        //RowContacts for filter Account Types
         Cursor contactCursor = cr.query(
                 ContactsContract.RawContacts.CONTENT_URI,
                 new String[]{ContactsContract.RawContacts._ID,
@@ -205,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{"com.whatsapp"},
                 null);
 
-//ArrayList for Store Whatsapp Contact
+        //ArrayList for Store Whatsapp Contact
         //ArrayList<String> myWhatsappContacts = new ArrayList<>();
 
         if (contactCursor != null) {
