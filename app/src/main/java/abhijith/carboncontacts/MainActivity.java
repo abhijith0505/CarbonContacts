@@ -72,10 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
         initializeViews();
 
-       /* MobileAds.initialize(getApplicationContext(), getString(R.string.admob_test_appID));
+        MobileAds.initialize(getApplicationContext(), getString(R.string.admob_myAppID));
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);*/
+        mAdView.loadAd(adRequest);
 
         phoneContacts = new ArrayList<>(); //Contains all contacts
         contactDuplicates = new ArrayList<>();
