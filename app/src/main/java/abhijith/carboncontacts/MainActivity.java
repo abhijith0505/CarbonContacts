@@ -97,10 +97,10 @@ public class MainActivity extends AppCompatActivity {
         //populates arraylists for simple listview adapter
         //TODO: use a custom adapter for better UX
         for (PhoneContact contact : phoneContacts) {
-            allContacts.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
+            allContacts.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
         }
         for (PhoneContact contact : contactDuplicates) {
-            onlyDuplicates.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
+            onlyDuplicates.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
 
         }
 
@@ -256,10 +256,8 @@ public class MainActivity extends AppCompatActivity {
                                     pCursor.close();
                                 }
                                 whatsAppContactCursor.close();
-
                                 //Add Number to ArrayList
                                 //myWhatsappContacts.add(number);
-
 
                             }
                         }

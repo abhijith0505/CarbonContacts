@@ -5,7 +5,7 @@
     tools:context=".MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fffde7"
+    android:background="#ffffff"
     tools:showIn="@layout/activity_main"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:orientation="vertical">
@@ -45,7 +45,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id">
+        ads:adUnitId="@string/banner_ad_unit_test_id">
     </com.google.android.gms.ads.AdView>
 
 
