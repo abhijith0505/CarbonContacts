@@ -13,11 +13,11 @@ Allows you to delete these unwanted occurrences.
 Updated to house the new <strong>Android M</strong> runtime permissions.
 
 #Screenshots
-![    ](Screenshots/sc1.png?raw=true =150x)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![    ](Screenshots/sc2.png?raw=true =150x)
+![    ](Screenshots/sc1_2.png?raw=true =150x)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![    ](Screenshots/sc2_2.png?raw=true =150x)
 
-![    ](Screenshots/sc3.png?raw=true =150x)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![    ](Screenshots/sc4.png?raw=true =150x)
+![    ](Screenshots/sc3_2.png?raw=true =150x)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![    ](Screenshots/sc4_2.png?raw=true =150x)
  
 
  
-<a href='https://play.google.com/store/apps/details?id=abhijith.carboncontacts&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' style="width:200px;"/></a>
+<a href='https://play.google.com/store/apps/details?id=abhijith.carboncontacts&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="200px"/></a>
 
