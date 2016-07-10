@@ -72,19 +72,19 @@ public class MainActivity extends AppCompatActivity {
 
         initializeViews();
 
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713");
+       /* MobileAds.initialize(getApplicationContext(), getString(R.string.admob_test_appID));
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        mAdView.loadAd(adRequest);*/
 
         phoneContacts = new ArrayList<>(); //Contains all contacts
         contactDuplicates = new ArrayList<>();
 
         //loads WhatsApp contact number IDs
         getWhatsAppContactIDs();
-
         //Reads all the contacts and stores them in phoneContacts Arraylist
         readPhoneContacts(MainActivity.this);
+
         if (phoneContacts.size() > 1)
             contactDuplicates = findDuplicates(phoneContacts); //Contains all duplicated entries
 
