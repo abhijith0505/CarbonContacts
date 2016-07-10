@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
     SparseBooleanArray checkedItemPositions;
     int d, d1;
 
+    AlertDialog alertDialog;
+    TextView valueTV ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,32 +82,6 @@ public class MainActivity extends AppCompatActivity {
 
         phoneContacts = new ArrayList<>(); //Contains all contacts
         contactDuplicates = new ArrayList<>();
-
-        //loads WhatsApp contact number IDs
-        getWhatsAppContactIDs();
-        //Reads all the contacts and stores them in phoneContacts Arraylist
-        readPhoneContacts(MainActivity.this);
-
-        if (phoneContacts.size() > 1)
-            contactDuplicates = findDuplicates(phoneContacts); //Contains all duplicated entries
-
-        if(contactDuplicates.size() == 0){
-            fab.hide();
-        } else {
-            fab.show();
-
-        }
-        //populates arraylists for simple listview adapter
-        //TODO: use a custom adapter for better UX
-        for (PhoneContact contact : phoneContacts) {
-            allContacts.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
-        }
-        for (PhoneContact contact : contactDuplicates) {
-            onlyDuplicates.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
-
-        }
-
-        //Delete Contacts button
         fab.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,44 +89,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Load loading = new Load();
+        loading.execute();
 
-        //TODO: to be cleaned
-        k = 0;
-        p = 0;
-        Allcontacts = false;
-        mProgressDialog = new ProgressDialog(this);
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
-        listView.setAdapter(adapter);
-        listView.setItemsCanFocus(false);
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
-        RelativeLayout layout;
-        final TextView valueTV =  new TextView(this);
-        if (contactDuplicates.isEmpty() && Allcontacts == false) {
-            layout = (RelativeLayout) findViewById(R.id.rr);
-            valueTV.setText("No Duplicates!");
-            valueTV.setId('5');
-            valueTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 60);
+        //Delete Contacts button
 
-            valueTV.setLayoutParams(new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.FILL_PARENT,
-                    RelativeLayout.LayoutParams.FILL_PARENT));
-            valueTV.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-            layout.addView(valueTV);
-            fab.hide();
-        } else if (!contactDuplicates.isEmpty() && Allcontacts == false) {
-            k = 1;
-            fab.show();
-            alertDialog.setTitle("Duplicates Found!");
-            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.show();
-        }
+
+
+
 
 
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -502,7 +449,88 @@ public class MainActivity extends AppCompatActivity {
         cur.close();
     }
 
+    class Load extends AsyncTask<String, String, String> {
+        ProgressDialog progDailog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progDailog = new ProgressDialog(MainActivity.this);
+            progDailog.setMessage("Finding duplicates...");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(false);
+            progDailog.show();
+        }
+        @Override
+        protected String doInBackground(String... aurl) {
+            //loads WhatsApp contact number IDs
+            getWhatsAppContactIDs();
+            //Reads all the contacts and stores them in phoneContacts Arraylist
+            readPhoneContacts(MainActivity.this);
 
+            if (phoneContacts.size() > 1)
+                contactDuplicates = findDuplicates(phoneContacts); //Contains all duplicated entries
+
+
+            //populates arraylists for simple listview adapter
+            //TODO: use a custom adapter for better UX
+            for (PhoneContact contact : phoneContacts) {
+                allContacts.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
+            }
+            for (PhoneContact contact : contactDuplicates) {
+                onlyDuplicates.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
+
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(String unused) {
+            super.onPostExecute(unused);
+            progDailog.dismiss();
+            if(contactDuplicates.size() == 0){
+                fab.hide();
+            } else {
+                fab.show();
+            }
+            //TODO: to be cleaned
+            k = 0;
+            p = 0;
+            Allcontacts = false;
+            mProgressDialog = new ProgressDialog(MainActivity.this);
+            alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+            adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
+            listView.setAdapter(adapter);
+            listView.setItemsCanFocus(false);
+            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+            adapter.notifyDataSetChanged();
+            listView.invalidateViews();
+            RelativeLayout layout;
+            valueTV =  new TextView(MainActivity.this);
+            if (contactDuplicates.isEmpty() && Allcontacts == false) {
+                layout = (RelativeLayout) findViewById(R.id.rr);
+                valueTV.setText("No Duplicates!");
+                valueTV.setId('5');
+                valueTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 60);
+
+                valueTV.setLayoutParams(new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.FILL_PARENT,
+                        RelativeLayout.LayoutParams.FILL_PARENT));
+                valueTV.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+                layout.addView(valueTV);
+                fab.hide();
+            } else if (!contactDuplicates.isEmpty() && Allcontacts == false) {
+                k = 1;
+                fab.show();
+                alertDialog.setTitle("Duplicates Found!");
+                alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertDialog.dismiss();
+                    }
+                });
+                alertDialog.show();
+            }
+        }
+    }
 
 
     private class LongOperation extends AsyncTask<String, Integer, String> {
@@ -634,13 +662,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onStart() {
 
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
-        super.onStart();
-    }
 
     @Override
     protected void onRestart() {
@@ -659,14 +681,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
+  /*  @Override
     protected void onPostResume() {
         adapter.notifyDataSetChanged();
         listView.invalidateViews();
         super.onPostResume();
-
-
-    }
+    }*/
     @Override
     public void onDestroy(){
         super.onDestroy();
@@ -676,11 +696,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
 
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
-        super.onResume();
-    }
 }
