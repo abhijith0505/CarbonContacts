@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -34,6 +35,7 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,13 +47,18 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     ArrayList<PhoneContact> phoneContacts;
     ArrayList<PhoneContact> contactDuplicates;
+
+    ArrayList<PhoneContact> deletedContacts = new ArrayList<>();
+
     FloatingActionButton fab;
 
-    //TODO: Proper nomenclature and cleaning required
+
     ArrayList<String> allContacts = new ArrayList<>();
     ArrayList<String> onlyDuplicates = new ArrayList<>();
     ArrayList<String> whatsAppIDs = new ArrayList<>();
     ArrayAdapter<String> adapter = null;
+
+    //TODO: Proper nomenclature and cleaning required
     int k = 0, p = 0;
     boolean Allcontacts;
     Switch mySwitch;
@@ -75,13 +82,14 @@ public class MainActivity extends AppCompatActivity {
 
         initializeViews();
 
-        /*MobileAds.initialize(getApplicationContext(), getString(R.string.admob_myAppID));
+        MobileAds.initialize(getApplicationContext(), getString(R.string.admob_myAppID));
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);*/
+        mAdView.loadAd(adRequest);
 
         phoneContacts = new ArrayList<>(); //Contains all contacts
         contactDuplicates = new ArrayList<>();
+
         fab.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,13 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
         Load loading = new Load();
         loading.execute();
-
-        //Delete Contacts button
-
-
-
-
-
 
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -407,12 +408,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void updateContact(String contactId, String phoneNumberID) {
+    public void updateContact(PhoneContact contact, String contactId, String phoneNumberID) {
         ContentResolver contentResolver = this.getContentResolver();
         Cursor cur = contentResolver.query(ContactsContract.RawContacts.CONTENT_URI,
                 new String[]{ContactsContract.RawContacts._ID},
                 ContactsContract.RawContacts.CONTACT_ID + "=?",
-                new String[] {contactId}, null);
+                new String[] {contact.getContactID()}, null);
 
         int rowId=0;
 
@@ -427,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
 
         String[] phoneArgs = new String[] { Integer.toString(rowId),
                 ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
-                phoneNumberID.toString()};
+                contact.getContactNumberID()};
 
         ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
                 .withSelection(selectPhone, phoneArgs).build());
@@ -438,6 +439,8 @@ public class MainActivity extends AppCompatActivity {
         ops.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI)
                 .withSelection(ContactsContract.RawContacts._ID + "=?", phoneArgs)
                 .build());*/
+
+        deletedContacts.add(contact);
 
         try {
             getApplicationContext().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
@@ -542,7 +545,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0, t = 1; i <itemCount; t++, i++) {
                     if (checkedItemPositions.get(i)) {
                         String id = phoneContacts.get(i).getContactID();
-                        updateContact(id, phoneContacts.get(i).getContactNumberID());
+                        updateContact(phoneContacts.get(i),id, phoneContacts.get(i).getContactNumberID());
                         emptyRemover(id);
                         publishProgress((int) (t * 100 / itemCount));
                     }
@@ -552,7 +555,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0, t = 1; i <itemCount; t++, i++) {
                     if (checkedItemPositions.get(i)) {
                         String id = contactDuplicates.get(i).getContactID();
-                        updateContact(id, contactDuplicates.get(i).getContactNumberID());
+                        updateContact(phoneContacts.get(i), id, contactDuplicates.get(i).getContactNumberID());
                         emptyRemover(id);
                         publishProgress((int) (t * 100 / itemCount));
                     }
@@ -563,6 +566,9 @@ public class MainActivity extends AppCompatActivity {
 
             return null;
         }
+
+
+
 
         @Override
         protected void onPostExecute(String result) {
@@ -656,12 +662,32 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_about:
                 startActivity(new Intent(MainActivity.this, About.class));
                 return true;
+            case R.id.action_recent:
+                storeDeletedContacts();
+                Intent intent = new Intent(MainActivity.this, RecentDeletes.class);
+                intent.putExtra("delete",deletedContacts);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void storeDeletedContacts() {
+        SharedPreferences sharedpreferences = getSharedPreferences("deleted", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        int size = sharedpreferences.getInt("size", 0);
+        int i;
+        for(i = size; i<deletedContacts.size(); ++i){
+            Gson gson = new Gson();
+            String json = gson.toJson(deletedContacts.get(i));
+            editor.putString("deleted_" + i, json);
+            editor.commit();
+        }
+        editor.putInt("size",i);
+        editor.commit();
 
+    }
 
 
     @Override
