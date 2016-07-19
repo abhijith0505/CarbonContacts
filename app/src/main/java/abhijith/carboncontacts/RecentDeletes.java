@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-public class RecentDeletes extends Activity {
+public class RecentDeletes extends AppCompatActivity {
 
     ArrayList<PhoneContact> deletedContacts = new ArrayList<>();
 
@@ -20,6 +21,7 @@ public class RecentDeletes extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recent_deletes);
        // getActionBar().setDisplayHomeAsUpEnabled(true);
+
 
 
         SharedPreferences sharedpreferences = getSharedPreferences("deleted", Context.MODE_PRIVATE);

@@ -615,6 +615,7 @@ public class MainActivity extends AppCompatActivity {
             }
             refreshLists();
             mProgressDialog.dismiss();
+            storeDeletedContacts();
         }
 
         @Override
@@ -663,9 +664,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, About.class));
                 return true;
             case R.id.action_recent:
-                storeDeletedContacts();
                 Intent intent = new Intent(MainActivity.this, RecentDeletes.class);
-                intent.putExtra("delete",deletedContacts);
                 startActivity(intent);
                 return true;
             default:
@@ -677,42 +676,20 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedpreferences = getSharedPreferences("deleted", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         int size = sharedpreferences.getInt("size", 0);
-        int i;
-        for(i = size; i<deletedContacts.size(); ++i){
+        int i = size;
+        for(int j = 0; j<deletedContacts.size(); ++j){
             Gson gson = new Gson();
-            String json = gson.toJson(deletedContacts.get(i));
+            String json = gson.toJson(deletedContacts.get(j));
             editor.putString("deleted_" + i, json);
             editor.commit();
+            i++;
         }
+        deletedContacts.clear();
         editor.putInt("size",i);
         editor.commit();
 
     }
 
-
-    @Override
-    protected void onRestart() {
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
-        super.onRestart();
-
-    }
-
-    @Override
-    protected void onPause() {
-
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
-        super.onPause();
-    }
-
-
-  /*  @Override
-    protected void onPostResume() {
-        adapter.notifyDataSetChanged();
-        listView.invalidateViews();
-        super.onPostResume();
-    }*/
     @Override
     public void onDestroy(){
         super.onDestroy();
