@@ -1,7 +1,10 @@
 language: android
+
 sudo: required
+
 android:
   components:
 	- build-tools-23.0.1
-before_script:
+	
+before_install:
   - chmod +x gradlew
