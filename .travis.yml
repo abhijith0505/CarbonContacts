@@ -3,3 +3,5 @@ sudo: required
 android:
   components:
 	- build-tools-23.0.1
+before_script:
+  - chmod +x gradlew
