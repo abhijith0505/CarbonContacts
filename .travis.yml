@@ -1,12 +1,10 @@
 language: android
-
-before_install:
-  - chmod +x gradlew
-  - android list sdk --no-ui --all --extended
-
-sudo: false
-
 android:
   components:
-	- build-tools-23.0.1
-	
+    - tools
+    - platform-tools
+    - build-tools-23.0.2
+    - android-23
+
+script:
+   - ./gradlew build connectedCheck
