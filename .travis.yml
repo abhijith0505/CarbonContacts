@@ -1,5 +1,5 @@
 language: android
-sudo: require
+sudo: required
 android:
   components:
 	- build-tools-23.0.1
