@@ -1,10 +1,12 @@
 language: android
 
+before_install:
+  - chmod +x gradlew
+  - android list sdk --no-ui --all --extended
+
 sudo: required
 
 android:
   components:
 	- build-tools-23.0.1
 	
-before_install:
-  - chmod +x gradlew
