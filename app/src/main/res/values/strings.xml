@@ -15,5 +15,6 @@
     <string name="banner_ad_unit_id">ca-app-pub-4188872795654365/4821370134</string>
     <string name="title_activity_recent_deletes">RecentDeletes</string>
     <string name="action_recently_deleted">Recently deleted</string>
+    <string name="menu_clear_history">Clear History</string>
 
 </resources>
