@@ -1,5 +1,7 @@
 Carbon Contacts
 ================
+[![API](https://img.shields.io/badge/API-15-blue.svg?style=plastic)[![Code Climate](https://codeclimate.com/github/abhijith0505/CarbonContacts/badges/gpa.svg)](https://codeclimate.com/github/abhijith0505/CarbonContacts)   [![Test Coverage](https://codeclimate.com/github/abhijith0505/CarbonContacts/badges/coverage.svg)](https://codeclimate.com/github/abhijith0505/CarbonContacts/coverage)  [![contributions welcome](https://codeclimate.com/github/abhijith0505/CarbonContacts)
+
 An android app that lets users select duplicates from their contact list and delete them.
 
 Lists all duplicate contacts in your phone.
