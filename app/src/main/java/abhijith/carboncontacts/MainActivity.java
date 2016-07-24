@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> whatsAppIDs = new ArrayList<>();
     ArrayAdapter<String> adapter = null;
 
-    //TODO: Proper nomenclature and cleaning required
+
     int k = 0, p = 0;
     boolean Allcontacts;
     Switch mySwitch;
@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
         //populates arraylists for simple listview adapter
-        //TODO: use a custom adapter for better UX
+
         for (PhoneContact contact : phoneContacts) {
             allContacts.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
         }
@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Cleaned
     //Returns all occurences of the duplicate entries
-    //TODO: Shorten code if possible
+
     public ArrayList<PhoneContact> findDuplicates(ArrayList<PhoneContact> listContainingDuplicates) {
         ArrayList<PhoneContact> duplicatesOrganised = new ArrayList();
         ArrayList<PhoneContact> setToReturn = new ArrayList();
@@ -365,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //________________________________________________________________________________________________________________________________
-    //TODO: Remaining functions to be cleaned
+
 
 
     public void deleteDupes() {
@@ -476,7 +476,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             //populates arraylists for simple listview adapter
-            //TODO: use a custom adapter for better UX
+
             for (PhoneContact contact : phoneContacts) {
                 allContacts.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
             }
@@ -495,7 +495,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 fab.show();
             }
-            //TODO: to be cleaned
+
             k = 0;
             p = 0;
             Allcontacts = false;

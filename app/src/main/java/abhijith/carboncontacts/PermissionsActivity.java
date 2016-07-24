@@ -80,7 +80,7 @@ public class PermissionsActivity extends AppCompatActivity {
             if (ActivityCompat.shouldShowRequestPermissionRationale(PermissionsActivity.this,
                     Manifest.permission.READ_CONTACTS)) {
                 //Toast.makeText(PermissionsActivity.this,"Read contacts",Toast.LENGTH_LONG).show();
-                //TODO: Show an expanation to the user *asynchronously* -- UI to be done
+
                 ActivityCompat.requestPermissions(PermissionsActivity.this,
                         new String[]{Manifest.permission.READ_CONTACTS},
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
