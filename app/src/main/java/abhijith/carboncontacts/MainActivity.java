@@ -93,6 +93,46 @@ public class MainActivity extends AppCompatActivity {
         Load loading = new Load();
         loading.execute();
 
+        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                if (isChecked) {
+                    Allcontacts = true;
+                    if(allContacts.isEmpty()){
+                        fab.hide();
+                    }
+                    else    fab.show();
+
+                    adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, allContacts);
+                    listView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    listView.invalidateViews();
+                    valueTV.setVisibility(View.INVISIBLE);
+
+                } else {
+                    Allcontacts = false;
+
+                    if (onlyDuplicates.isEmpty()) {
+                        fab.hide();
+                        valueTV.setVisibility(View.VISIBLE);
+                        adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
+                        listView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        listView.invalidateViews();
+                    } else {
+                        fab.show();
+                        valueTV.setVisibility(View.INVISIBLE);
+                        adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
+                        listView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        listView.invalidateViews();
+                    }
+                }
+            }
+        });
+
         fab.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -447,48 +487,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(unused);
             progDailog.dismiss();
 
-            mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView,
-                                             boolean isChecked) {
-                    if(checkedItem!=null && checkedItemPositions!=null){
-                        checkedItem.clear();
-                        checkedItemPositions.clear();
-                    }
-
-                    if (isChecked) {
-                        valueTV.setVisibility(View.INVISIBLE);
-                        Allcontacts = true;
-                        if(allContacts.isEmpty()){
-                            fab.hide();
-                        }
-                        else {
-                            fab.show();
-                        }
-                        adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, allContacts);
-                        listView.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
-                        listView.invalidateViews();
-
-
-                    } else {
-                        Allcontacts = false;
-
-                        if (onlyDuplicates.isEmpty()) {
-                            fab.hide();
-                            valueTV.setVisibility(View.VISIBLE);
-                        } else {
-                            fab.show();
-                            valueTV.setVisibility(View.INVISIBLE);
-                            adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
-                            listView.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                            listView.invalidateViews();
-                        }
-                    }
-                }
-            });
 
 
             if(contactDuplicates.size() == 0){
