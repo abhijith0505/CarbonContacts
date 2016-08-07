@@ -90,54 +90,13 @@ public class MainActivity extends AppCompatActivity {
         phoneContacts = new ArrayList<>(); //Contains all contacts
         contactDuplicates = new ArrayList<>();
 
+        Load loading = new Load();
+        loading.execute();
+
         fab.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deleteDupes();
-            }
-        });
-
-        Load loading = new Load();
-        loading.execute();
-
-        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-
-                if (isChecked) {
-                    Allcontacts = true;
-                    if(allContacts.isEmpty()){
-                        fab.hide();
-                    }
-                    else    fab.show();
-
-                    adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, allContacts);
-                    listView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
-                    listView.invalidateViews();
-                    valueTV.setVisibility(View.INVISIBLE);
-
-                } else {
-                    Allcontacts = false;
-
-                    if (onlyDuplicates.isEmpty()) {
-                        fab.hide();
-                        valueTV.setVisibility(View.VISIBLE);
-                        adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
-                        listView.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
-                        listView.invalidateViews();
-                    } else {
-                        fab.show();
-                        valueTV.setVisibility(View.INVISIBLE);
-                        adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
-                        listView.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
-                        listView.invalidateViews();
-                    }
-                }
             }
         });
     }
@@ -181,9 +140,9 @@ public class MainActivity extends AppCompatActivity {
                                 String number = whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
                                 String phoneNumberID;
-                                //Log.i("whatsapp", " WhatsApp contact id  :  " + id);
-                                //Log.i("whatsapp", " WhatsApp contact name :  " + name);
-                                ///Log.i("whatsapp", " WhatsApp contact number :  " + number);
+                                Log.i("whatsapp", " WhatsApp contact id  :  " + id);
+                                Log.i("whatsapp", " WhatsApp contact name :  " + name);
+                                Log.i("whatsapp", " WhatsApp contact number :  " + number);
                                 //if (Integer.parseInt(whatsAppContactCursor.getString(whatsAppContactCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
                                 {
                                     //the below cursor will give you details for multiple contacts
@@ -199,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                                         //Logs.e will print the phone number along with the name in DDMS. you can use these details where ever you want.
                                         phoneNumberID = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
                                         whatsAppIDs.add(phoneNumberID);
-                                        //Log.i("whatsapp", " WhatsApp contact numberID :  " + phoneNumberID);
+                                        Log.i("whatsapp", " WhatsApp contact numberID :  " + phoneNumberID);
                                     }
                                     pCursor.close();
                                 }
@@ -224,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         mySwitch = (Switch) findViewById(R.id.switch1);
         mySwitch.setChecked(false);
-
     }
 
     //Cleaned
@@ -278,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if(!whatsAppIDs.contains(phoneNumberID))
                             phoneContacts.add(new PhoneContact(phoneNo, contactName, type, id, phoneNumberID));
-                        //Log.i("Contact details:",phoneNo + ": " + contactName + ": " + type + ": " + id + ": " + phoneNumberID);
+                        Log.i("Contact details:",phoneNo + ": " + contactName + ": " + type + ": " + id + ": " + phoneNumberID);
                     }
                     pCursor.close();
                 }
@@ -305,11 +263,10 @@ public class MainActivity extends AppCompatActivity {
         //populates arraylists for simple listview adapter
 
         for (PhoneContact contact : phoneContacts) {
-            allContacts.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
+            allContacts.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
         }
         for (PhoneContact contact : contactDuplicates) {
-            onlyDuplicates.add(contact.getContactNumber() + "(" + contact.getContactType() + "): " + contact.getContactName());
-
+            onlyDuplicates.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
         }
     }
 
@@ -327,13 +284,13 @@ public class MainActivity extends AppCompatActivity {
         for (i = 0; i < size; i++) {
             if(i+1 == size){
                 duplicatesOrganised.add(listContainingDuplicates.get(i));
-                //Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
             }else if (listContainingDuplicates.get(i).getContactNumber().equals(listContainingDuplicates.get(i+1).getContactNumber())) {
                 duplicatesOrganised.add(listContainingDuplicates.get(i));
-                //Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
             }else{
                 duplicatesOrganised.add(listContainingDuplicates.get(i));
-                //Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
+                Log.i("DuplicateOrdered: ",listContainingDuplicates.get(i).getContactNumber()+" "+listContainingDuplicates.get(i).getContactName());
             }
         }
 
@@ -348,16 +305,16 @@ public class MainActivity extends AppCompatActivity {
         for (i = start; i < size; i++) {
             if(i+1 == size && duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
                 setToReturn.add(duplicatesOrganised.get(i));
-                //Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
             } else if(i+1 == size && !duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())){
                 continue;
             } else if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())) {
                 setToReturn.add(duplicatesOrganised.get(i));
-                //Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+                Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
             } else if(!duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i+1).getContactNumber())){
                 if (duplicatesOrganised.get(i).getContactNumber().equals(duplicatesOrganised.get(i-1).getContactNumber())) {
                     setToReturn.add(duplicatesOrganised.get(i));
-                    //Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
+                    Log.i("Duplicate: ", duplicatesOrganised.get(i).getContactNumber() + " " + duplicatesOrganised.get(i).getContactName());
                 }
             }
         }
@@ -439,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
         ops.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI)
                 .withSelection(ContactsContract.RawContacts._ID + "=?", phoneArgs)
                 .build());*/
-
+        Log.d("Deleted: ", contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
         deletedContacts.add(contact);
 
         try {
@@ -482,7 +439,6 @@ public class MainActivity extends AppCompatActivity {
             }
             for (PhoneContact contact : contactDuplicates) {
                 onlyDuplicates.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
-
             }
             return null;
         }
@@ -490,6 +446,51 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String unused) {
             super.onPostExecute(unused);
             progDailog.dismiss();
+
+            mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView,
+                                             boolean isChecked) {
+                    if(checkedItem!=null && checkedItemPositions!=null){
+                        checkedItem.clear();
+                        checkedItemPositions.clear();
+                    }
+
+                    if (isChecked) {
+                        valueTV.setVisibility(View.INVISIBLE);
+                        Allcontacts = true;
+                        if(allContacts.isEmpty()){
+                            fab.hide();
+                        }
+                        else {
+                            fab.show();
+                        }
+                        adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.row, allContacts);
+                        listView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        listView.invalidateViews();
+
+
+                    } else {
+                        Allcontacts = false;
+
+                        if (onlyDuplicates.isEmpty()) {
+                            fab.hide();
+                            valueTV.setVisibility(View.VISIBLE);
+                        } else {
+                            fab.show();
+                            valueTV.setVisibility(View.INVISIBLE);
+                            adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
+                            listView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            listView.invalidateViews();
+                        }
+                    }
+                }
+            });
+
+
             if(contactDuplicates.size() == 0){
                 fab.hide();
             } else {
@@ -555,7 +556,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0, t = 1; i <itemCount; t++, i++) {
                     if (checkedItemPositions.get(i)) {
                         String id = contactDuplicates.get(i).getContactID();
-                        updateContact(phoneContacts.get(i), id, contactDuplicates.get(i).getContactNumberID());
+                        updateContact(contactDuplicates.get(i), id, contactDuplicates.get(i).getContactNumberID());
                         emptyRemover(id);
                         publishProgress((int) (t * 100 / itemCount));
                     }
