@@ -40,6 +40,9 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import hotchemi.android.rate.AppRate;
+import hotchemi.android.rate.OnClickButtonListener;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         Load loading = new Load();
         loading.execute();
 
+
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -139,6 +143,27 @@ public class MainActivity extends AppCompatActivity {
                 deleteDupes();
             }
         });
+    }
+
+    void AppRating(){
+        AppRate.with(this)
+                .setInstallDays(0) // default 10, 0 means install day.
+                .setLaunchTimes(1) // default 10
+                .setRemindInterval(1) // default 1
+                .setShowLaterButton(true) // default true
+                .setDebug(false) // default false
+                .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
+                    @Override
+                    public void onClickButton(int which) {
+                        Log.d(MainActivity.class.getName(), Integer.toString(which));
+                    }
+                })
+                .monitor();
+
+        // Show a dialog if meets conditions
+        AppRate.showRateDialogIfMeetsConditions(this);
+
+        AppRate.with(this).clearAgreeShowDialog();
     }
 
     private void getWhatsAppContactIDs() {
@@ -487,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(unused);
             progDailog.dismiss();
 
-
+            AppRating();
 
 
             if(contactDuplicates.size() == 0){
