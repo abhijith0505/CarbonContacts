@@ -11,8 +11,7 @@
 
     <string name="banner_ad_unit_test_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="admob_test_appID">ca-app-pub-3940256099942544~3347511713</string>
-    <string name="admob_myAppID">ca-app-pub-4188872795654365~3344636932</string>
-    <string name="banner_ad_unit_id">ca-app-pub-4188872795654365/4821370134</string>
+    
     <string name="title_activity_recent_deletes">RecentDeletes</string>
     <string name="action_recently_deleted">Recently deleted</string>
     <string name="menu_clear_history">Clear History</string>

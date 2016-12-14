@@ -85,10 +85,10 @@ public class MainActivity extends AppCompatActivity {
 
         initializeViews();
 
-        MobileAds.initialize(getApplicationContext(), getString(R.string.admob_myAppID));
+        /*MobileAds.initialize(getApplicationContext(), getString(R.string.admob_myAppID));
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        mAdView.loadAd(adRequest);*/
 
         phoneContacts = new ArrayList<>(); //Contains all contacts
         contactDuplicates = new ArrayList<>();
@@ -174,8 +174,8 @@ public class MainActivity extends AppCompatActivity {
                 ContactsContract.RawContacts.CONTENT_URI,
                 new String[]{ContactsContract.RawContacts._ID,
                         ContactsContract.RawContacts.CONTACT_ID},
-                ContactsContract.RawContacts.ACCOUNT_TYPE + "= ?",
-                new String[]{"com.whatsapp"},
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "= ? OR " + ContactsContract.RawContacts.ACCOUNT_TYPE + "= ?",
+                new String[]{"com.whatsapp","com.freecharge.android"},
                 null);
 
         //ArrayList for Store Whatsapp Contact
@@ -212,8 +212,9 @@ public class MainActivity extends AppCompatActivity {
                                 {
                                     //the below cursor will give you details for multiple contacts
                                     Cursor pCursor = MainActivity.this.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,
-                                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ? and " +ContactsContract.RawContacts.ACCOUNT_TYPE + "= ?" ,
-                                            new String[]{id, "com.whatsapp"}, null);
+                                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ? and " + ContactsContract.RawContacts.ACCOUNT_TYPE + "= ? OR "
+                                            +  ContactsContract.RawContacts.ACCOUNT_TYPE + "= ? ",
+                                            new String[]{id, "com.whatsapp", "com.freecharge.android"}, null);
                                     // continue till this cursor reaches to all phone numbers which are associated with a contact in the contact list
                                     while (pCursor.moveToNext())
                                     {
@@ -253,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
     //Cleaned
     //Retrieves all contacts
     public void readPhoneContacts(Context context)
-    {
+    {   phoneContacts.clear();
         Cursor cursor = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         Integer contactsCount = cursor.getCount(); //get how many contacts you have in your contacts list
         if (contactsCount > 0)
@@ -302,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
                         if(!whatsAppIDs.contains(phoneNumberID))
                             phoneContacts.add(new PhoneContact(phoneNo, contactName, type, id, phoneNumberID));
                         Log.i("Contact details:",phoneNo + ": " + contactName + ": " + type + ": " + id + ": " + phoneNumberID);
+                        Log.i("contacts type:", pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.ACCOUNT_TYPE_AND_DATA_SET)));
                     }
                     pCursor.close();
                 }
@@ -502,9 +504,11 @@ public class MainActivity extends AppCompatActivity {
             for (PhoneContact contact : phoneContacts) {
                 allContacts.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
             }
+            Collections.sort(allContacts);
             for (PhoneContact contact : contactDuplicates) {
                 onlyDuplicates.add(contact.getContactName() + "(" + contact.getContactType() + "): " + contact.getContactNumber());
             }
+            Collections.sort(onlyDuplicates);
             return null;
         }
         @Override
@@ -526,6 +530,7 @@ public class MainActivity extends AppCompatActivity {
             Allcontacts = false;
             mProgressDialog = new ProgressDialog(MainActivity.this);
             alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+
             adapter = new ArrayAdapter<>(MainActivity.this, R.layout.row, onlyDuplicates);
             listView.setAdapter(adapter);
             listView.setItemsCanFocus(false);
