@@ -1,4 +1,4 @@
-#[Deprecated]
+# [Deprecated]
 
 Carbon Contacts
 ================
@@ -16,7 +16,8 @@ Allows you to delete these unwanted occurrences.
 
 Updated to house the new <strong>Android M</strong> runtime permissions.
 
-#Screenshots
+# Screenshots
+
 ![    ](Screenshots/sc1_2.png?raw=true =150x)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![    ](Screenshots/sc2_2.png?raw=true =150x)
 
 ![    ](Screenshots/sc3_2.png?raw=true =150x)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![    ](Screenshots/sc4_2.png?raw=true =150x)
